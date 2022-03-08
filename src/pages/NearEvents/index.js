@@ -1,13 +1,25 @@
-import React from 'react'
-import {View, Text, StyleSheet, ScrollView, Image} from 'react-native'
+import React, {useState, useEffect} from 'react'
+import {View, Text, StyleSheet, ScrollView, TextInput, Image} from 'react-native'
 import {useNavigation} from '@react-navigation/native'
 
-import Header from '../../components/Header'
+import api from '../../services/api'
 import TitleText from '../../components/TitleText'
 import MainButton from '../../components/MainButton'
+import EventBox from '../../components/EventBox'
 
 export default function PersonalInfo(){
+    const [events, setEvents] = useState([])
     const Navigation = useNavigation()
+
+    useEffect(() => {
+        api.get("/event", {})
+        .then(res => {
+            setEvents(res.data)
+        })
+        .catch(e => {
+            console.log(e)
+        })
+    }, [])
 
     function Reserve(){
         Navigation.push('Reserve')
@@ -20,138 +32,74 @@ export default function PersonalInfo(){
     function Maps(){
         Navigation.push('Maps')
     }
-    function Maps2(){
-        Navigation.push('Maps2')
-    }
 
     function Logout(){
         Navigation.push('Home')
     }
 
     return (
-        <View style={styles.container}>
-            
-            <Header/>
-                <TitleText>Eventos Próximos</TitleText>
-                <ScrollView showsVerticalScrollIndicator={false}>
-                <View style={styles.box1}>
-                    <Image
-                        source={require('../NearEvents/primeira.png')}
-                        style={styles.img}
-                    ></Image>
-                        
-                    <View style={{
-                        flexDirection: 'row',
-                        margin: 10,
-                        width: 140,
-                        height: 70,
-                        justifyContent: 'space-between'
-                        }}>
-                            <Text style={{ color: 'black', fontSize: 24, fontWeight: 'bold', margin: 5}}>Verdinho Bar Univer    </Text>
-                                <MainButton 
-                                onPress={Maps}
-                                >
-                                Endereço<Image
-                                    source={require('../NearEvents/endereco2.png')}
-                                    style={styles.img2}
-                                ></Image>
-                                </MainButton>
-                        </View>
-                           
-                        <View style={{
-                            flexDirection: 'row',
-                            margin: 10,
-                            width: 140,
-                            height: 70,
-                            justifyContent: 'space-between'
-                            }}>
-                                <MainButton onPress={Promotion}>Promoções</MainButton>
-                                <MainButton onPress={Reserve}> Reservar </MainButton>
-                                
-                        </View>
-                    </View>
-                    
-                    <View style={styles.box1}>
-                        <Image
-                            source={require('../NearEvents/segunda.png')}
-                            style={styles.img}
-                        ></Image>
-                        
-                        <View style={{
-                            flexDirection: 'row',
-                            margin: 10,
-                            width: 140,
-                            height: 70,
-                            justifyContent: 'space-between'
-                            }}>
-                                <Text style={{ color: 'black', fontSize: 23, fontWeight: 'bold', margin: 5}}>Kiko's Rest e Pizzaria</Text>
-                                    <MainButton onPress={Maps2}>Endereço<Image
-                                    source={require('../NearEvents/endereco2.png')}
-                                    style={styles.img2}
-                                ></Image>
-                                
-                                    </MainButton>
-                            </View>
-                           
-                        <View style={{
-                            flexDirection: 'row',
-                            margin: 10,
-                            width: 140,
-                            height: 70,
-                            justifyContent: 'space-between'
-                            }}>
-                                <MainButton onPress={Promotion}>Promoções</MainButton>
-                                <MainButton onPress={Reserve}> Reservar </MainButton>
-                                
-                        </View>
-                    </View>
-    
-            </ScrollView>
-        </View>
+        <ScrollView style={styles.scrollContainer}>
+            <View style={styles.container}>
+                <TitleText>Eventos</TitleText>
+
+                <View style={styles.inputContainer}>
+                    {
+                        events.map((event) => {
+                            return (
+                                <EventBox
+                                    key={String(event.id)}
+                                    title={event.title}
+                                    image={String(event.image_url)}
+                                    eventId={event.id}
+                                />
+                            )
+                        })
+                    }
+                </View>
+            </View>
+        </ScrollView>
     )
 }
 
 const styles = StyleSheet.create({
-    container: {
+    scrollContainer: {
         backgroundColor: '#4CB6CE',
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: 362,
-        flex: 1
+        flex: 1,
+        paddingTop: 20,
     },
 
-    text: {
-        color: '#FFF',
-        fontSize: 12,
-        textAlign: 'left',
-        fontWeight: 'bold',
-        marginBottom: 25
+    container: {
+        alignItems: 'center',
+        justifyContent: 'center',
     },
-    img:{
-        flex: 1,
-        flexDirection:'row', 
-        alignItems:'center',
-        width: 300,
-        height: 250,
-        margin: 10,
-      },
-      img3:{
-       flexDirection:'row', 
-       alignItems:'center',
-       justifyContent: 'space-between',
-        width: 20,
-        height: 20,
-        margin: 10,
-      },
-    img2:{
-        width: 20,
-        height: 20,
-        margin: 10,
-      },
-    box1:{
-        backgroundColor: 'white',
-        width: 320,
-        height: 350,
-        margin: 10
-    }
+
+    inputContainer: {
+        width: '95%',
+        marginTop: 10
+    },
+    
+    input: {
+        backgroundColor: '#F3F3F3',
+        color: '#959595',
+        fontWeight: 'bold',
+        fontSize: 16,
+        borderRadius: 8,
+        padding: 16,
+        margin: 7
+    },
+
+    createAccount: {
+        backgroundColor: '#2C93AA',
+        width: '95%',
+        padding: 14,
+        margin: 4,
+        borderRadius: 8
+    },
+
+    accountText: {
+        color: '#FFF',
+        fontSize: 20,
+        textAlign: 'center',
+        fontWeight: 'bold',
+    },
 })

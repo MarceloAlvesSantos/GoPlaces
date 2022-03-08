@@ -2,30 +2,31 @@ import React from  'react'
 import { StyleSheet, View, Text, TextInput, TouchableOpacity, ScrollView } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 
-import Header from '../../components/Header'
 import MainButton from '../../components/MainButton'
 import TitleText from '../../components/TitleText'
 
-export default function Invitation(){
+export default function ChangeData(){
     const Navigation = useNavigation()
 
-    function Invitation(){
-        Navigation.push('EventTabs')
+    function ChangeData(){
+      Navigation.push('EventTabs')
     }
 
     return (
         <ScrollView>
             <View style={styles.container}>
-                <Header/>
-
-                <TitleText>Convidar</TitleText>
+                <TitleText>Alterar Dados</TitleText>
 
                 <View style={styles.inputContainer}>
                     <TextInput placeholder="Nome" style={styles.input}/>
                     <TextInput placeholder="Nascimento" style={styles.input}/>
+                    <TextInput placeholder="CPF/CNPJ" style={styles.input}/>
+                    <TextInput placeholder="Email" style={styles.input}/>
+                    <TextInput placeholder="Localização" style={styles.input}/>
 
-                    <MainButton onPress={Invitation}>Alterar Dados</MainButton>
-                    <MainButton onPress={Invitation}>Cancelar</MainButton>
+
+                    <MainButton onPress={ChangeData}>Alterar Dados</MainButton>
+                    <MainButton onPress={ChangeData}>Cancelar</MainButton>
                 </View>
             </View>
         </ScrollView>
@@ -55,7 +56,7 @@ const styles = StyleSheet.create({
         width: '95%'
     },
 
-    createAccount: {
+    changeData: {
         backgroundColor: '#2C93AA',
         width: '95%',
         padding: 14,

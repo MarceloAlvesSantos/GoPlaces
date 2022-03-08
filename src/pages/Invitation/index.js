@@ -1,35 +1,29 @@
-import React from  'react'
-import { StyleSheet, View, Text, TextInput, TouchableOpacity, ScrollView } from 'react-native'
+import React, {useState} from 'react'
+import { StyleSheet, View, Text, TextInput, TouchableOpacity, ScrollView, Linking} from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 
-import Header from '../../components/Header'
 import MainButton from '../../components/MainButton'
 import TitleText from '../../components/TitleText'
 
-export default function ChangeData(){
+export default function Invitation(){
     const Navigation = useNavigation()
+    const [numero, setNumero] = useState("")
+    const msg = "Baixe o app GoPlaces."
 
-    function ChangeData(){
-      Navigation.push('EventTabs')
+    function Invitation(){
+        Linking.openURL(`whatsapp://send?text=${msg}&phone=${"+55"+numero}}`)
     }
 
     return (
-        <ScrollView>
+        <ScrollView style={styles.scrollContainer}>
             <View style={styles.container}>
-                <Header/>
-
-                <TitleText>Alterar Dados</TitleText>
+                <TitleText>Convidar</TitleText>
 
                 <View style={styles.inputContainer}>
-                    <TextInput placeholder="Nome" style={styles.input}/>
-                    <TextInput placeholder="Nascimento" style={styles.input}/>
-                    <TextInput placeholder="CPF/CNPJ" style={styles.input}/>
-                    <TextInput placeholder="Email" style={styles.input}/>
-                    <TextInput placeholder="Localização" style={styles.input}/>
+                    <TextInput placeholder="Nascimento" style={styles.input} value={numero} onChangeText={setNumero}/>
 
-
-                    <MainButton onPress={ChangeData}>Alterar Dados</MainButton>
-                    <MainButton onPress={ChangeData}>Cancelar</MainButton>
+                    <MainButton onPress={Invitation}>Convidar</MainButton>
+                    <MainButton onPress={Invitation}>Cancelar</MainButton>
                 </View>
             </View>
         </ScrollView>
@@ -37,11 +31,14 @@ export default function ChangeData(){
 }
 
 const styles = StyleSheet.create({
-    container: {
+    scrollContainer: {
         backgroundColor: '#4CB6CE',
+        flex: 1
+    },
+
+    container: {
         alignItems: 'center',
         justifyContent: 'center',
-        flex: 1
     },
 
     inputContainer: {
@@ -59,7 +56,7 @@ const styles = StyleSheet.create({
         width: '95%'
     },
 
-    changeData: {
+    createAccount: {
         backgroundColor: '#2C93AA',
         width: '95%',
         padding: 14,

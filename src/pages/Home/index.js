@@ -1,46 +1,108 @@
-import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
+import React, {useState} from 'react';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useNavigation } from '@react-navigation/native';
 
-import Header from '../../components/Header'
+import api from '../../services/api'
 import MainButton from '../../components/MainButton'
 
 export default function Home() {
   const Navigation = useNavigation()
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [warningText, setWarningText] = useState("")
 
   function CreateAccount(){
     Navigation.push('CreateAccount')
   }
 
+  function Login(){
+    if (email === "" || password === ""){
+      setWarningText("Preencha todos os dados.")
+    }
+    else{
+      setWarningText("")
+      api.get("/users", {}, {params: {email}})
+      .then(async res => {
+        const [data] = res.data.filter(user => {
+          if (user.email === email){
+            return user
+          }
+        })
+        
+        if (data.email === email &&  data.password === password){
+          await AsyncStorage.setItem("@login", JSON.stringify(data))
+            .then(res => {
+              Navigation.push('EventTabs')
+            })
+            .catch(e => {
+              console.log(e)
+            })
+        }
+        else{
+          setWarningText("Usuário e/ou senha incorretos.")
+        }
+      })
+      .catch(err => {
+        setWarningText("Usuário e/ou senha incorretos.")
+        console.log(err)
+      })
+    }
+  }
+
   return (
-    <View style={styles.container}>
-      <Header/>
+    <ScrollView style={styles.scrollContainer}>
+      <View style={styles.container}>
+        <Text style={styles.promotionText}>Encontre os melhores eventos mais perto de você.</Text>
 
-      <StatusBar style="auto" />
+        <View style={styles.inputContainer}>
+          <TextInput
+            placeholder="Email"
+            style={styles.input}
+            value={email}
+            onChangeText={setEmail}
+          />
 
-      <Text style={styles.promotionText}>Encontre os melhores eventos mais perto de você.</Text>
+          <TextInput
+            placeholder="Senha"
+            style={styles.input}
+            value={password}
+            onChangeText={setPassword}
+          />
 
-      <View style={styles.inputContainer}>
-        <TextInput placeholder="Usuário" style={styles.input}/>
-        <TextInput placeholder="Senha" style={styles.input}/>
+          {warningText !== "" &&
+          (
+              <Text style={styles.warningText}>{warningText}</Text>
+          )}
 
-        <MainButton onPress={() => console.log('Login')}>Login</MainButton>
+          <MainButton onPress={Login}>Login</MainButton>
 
-        <TouchableOpacity onPress={CreateAccount}>
-          <Text style={styles.accountText}>Não tem uma conta? Crie agora.</Text>
-        </TouchableOpacity>
+          <TouchableOpacity onPress={CreateAccount}>
+            <Text style={styles.accountText}>Não tem uma conta? Crie agora.</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  scrollContainer: {
     backgroundColor: '#4CB6CE',
+    flex: 1
+  },
+
+  container: {
     alignItems: 'center',
     justifyContent: 'center',
-    flex: 1
+  },
+
+  warningText: {
+    color: '#ed392f',
+    fontSize: 16,
+    fontWeight: 'bold',
+    width: '100%',
+    textAlign: 'center'
   },
 
   inputContainer: {
@@ -60,7 +122,7 @@ const styles = StyleSheet.create({
 
   promotionText: {
     color: '#FFF',
-    fontSize: 46,
+    fontSize: 52,
     textAlign: 'left',
     fontWeight: 'bold',
     margin: 4,
@@ -70,7 +132,7 @@ const styles = StyleSheet.create({
 
   accountText: {
     color: '#FFF',
-    fontSize: 14,
+    fontSize: 16,
     textAlign: 'right',
     fontWeight: 'bold',
     marginRight: 10
